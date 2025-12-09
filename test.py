@@ -20,7 +20,6 @@ pipe = pipeline("audio-classification", model="Supreeta03/wav2vec2-base-CREMAD-s
 splits = {'train': 'train.csv', 'test': 'test.csv'}
 df = pd.read_csv("hf://datasets/MahiA/CREMA-D/" + splits["test"])
 
-data_path = "C:\\Users\\lahir\\code\\CREMA-D\\AudioWAV"
 
 gt_list, pred_list = [], []
 for i, row in df.iterrows():
