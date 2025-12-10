@@ -21,44 +21,57 @@ for i, label in enumerate(EMOTION_MAP.keys()):
 
 #dataloader
 train_ds, eval_ds = get_hf_dataset()
+dataloader = torch.utils.data.DataLoader(
+    eval_ds, 
+    batch_size=1,
+    shuffle=False,
+    collate_fn=lambda batch: {
+        'input_values': torch.stack([torch.tensor(item['input_values']) for item in batch]),
+        'labels': torch.tensor([item['label'] for item in batch])
+    }
+)
 
 num_labels = len(EMOTION_MAP)
 model = AutoModelForAudioClassification.from_pretrained(
     r'C:\\Users\\lahir\\models\\emo\\checkpoint-4600\\', num_labels=num_labels, label2id=label2id, id2label=id2label
 )
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-training_args = TrainingArguments(
-    output_dir=r'C:\Users\lahir\models\emo',
-    eval_strategy="epoch",
-    save_strategy="epoch",
-    learning_rate=3e-05,
-    lr_scheduler_type ="linear",
-    adam_beta1=0.9,
-    adam_beta2=0.999,
-    adam_epsilon=1e-8,
-    warmup_ratio=0.1,
-    per_device_train_batch_size=32,
-    gradient_accumulation_steps=4,
-    per_device_eval_batch_size=32,
-    num_train_epochs=100,
-    logging_steps=10,
-    load_best_model_at_end=True,
-    metric_for_best_model="accuracy",
-    push_to_hub=False,
-)
+def eval_model():
+    with torch.no_grad():
+        pred_list,gt_list=[],[]
+        for i,batch in enumerate(dataloader):
+            print(f'Processing batch {i+1}/{len(dataloader)}')
+            inputs = batch['input_values']
+            labels = batch['labels']
+            outputs = model(input_values=inputs).logits
+            pred = torch.argmax(outputs, dim=-1)
+            pred_list.append(pred.item())
+            gt_list.append(labels.item())   
+    acc = accuracy.compute(predictions=pred_list, references=gt_list)
+    print(f'Accuracy: {acc["accuracy"]:.4f}')
 
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=train_ds,
-    eval_dataset=eval_ds,
-    processing_class=feature_extractor,
-    compute_metrics=compute_metrics,
+def eval_model_noise():
+    with torch.no_grad():
+        pred_list,gt_list=[],[]
+        for i,batch in enumerate(dataloader):
+            print(f'Processing batch {i+1}/{len(dataloader)}')
+            inputs = batch['input_values']
+            labels = batch['labels']
+            outputs = model(input_values=inputs).logits
+            pred = torch.argmax(outputs, dim=-1)
+            pred_list.append(pred.item())
+            gt_list.append(labels.item())   
+    acc = accuracy.compute(predictions=pred_list, references=gt_list)
+    print(f'Accuracy: {acc["accuracy"]:.4f}')
 
-)
 
-eval_results  = trainer.evaluate()
-print(f"Evaluation results: {eval_results}")
+if __name__ == "__main__":
+    eval_model_noise()
+
+
+
+
 
 
 
