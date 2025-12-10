@@ -57,6 +57,7 @@ def eval_model_noise():
         for i,batch in enumerate(dataloader):
             print(f'Processing batch {i+1}/{len(dataloader)}')
             inputs = batch['input_values']
+            inputs = inputs + torch.randn_like(inputs) * 0.1
             labels = batch['labels']
             outputs = model(input_values=inputs).logits
             pred = torch.argmax(outputs, dim=-1)
