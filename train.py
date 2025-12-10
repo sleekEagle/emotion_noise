@@ -1,10 +1,24 @@
-from dataloaders.creamad import get_dataloader, EMOTION_MAP
+from dataloaders.creamad import get_dataset, EMOTION_MAP
 import torch
 import evaluate
 import numpy as np
 from transformers import AutoModelForAudioClassification, TrainingArguments, Trainer
+from transformers import AutoFeatureExtractor
+
+from datasets import load_dataset, Audio
+# minds = load_dataset("PolyAI/minds14", name="en-US", split="train")
+
+
 
 accuracy = evaluate.load("accuracy")
+feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
+
+def preprocess_function(examples):
+    audio_arrays = [x for x in examples["audio"]]
+    inputs = feature_extractor(
+        audio_arrays, sampling_rate=feature_extractor.sampling_rate, max_length=16000, truncation=True
+    )
+    return inputs
 
 def compute_metrics(eval_pred):
     predictions = np.argmax(eval_pred.predictions, axis=1)
@@ -14,6 +28,15 @@ label2id, id2label = dict(), dict()
 for i, label in enumerate(EMOTION_MAP.keys()):
     label2id[label] = str(i)
     id2label[str(i)] = label
+
+#dataloader
+data_path = r'C:\Users\lahir\code\CREMA-D\AudioWAV'
+train_ds = get_dataset(data_path, split='train')
+val_ds = get_dataset(data_path, split='val')
+
+encoded_minds = train_ds.map(preprocess_function, batched=True)
+pass
+
 
 num_labels = len(EMOTION_MAP)
 model = AutoModelForAudioClassification.from_pretrained(
