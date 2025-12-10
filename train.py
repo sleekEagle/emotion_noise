@@ -28,16 +28,25 @@ model = AutoModelForAudioClassification.from_pretrained(
     "facebook/wav2vec2-base", num_labels=num_labels, label2id=label2id, id2label=id2label
 )
 
+# for param in model.wav2vec2.parameters():
+#     param.requires_grad = False
+# for name, param in model.named_parameters():
+#     print(name, param.requires_grad)
+
 training_args = TrainingArguments(
     output_dir=r'C:\Users\lahir\models\emo',
     eval_strategy="epoch",
     save_strategy="epoch",
-    learning_rate=3e-5,
+    learning_rate=3e-05,
+    lr_scheduler_type ="linear",
+    adam_beta1=0.9,
+    adam_beta2=0.999,
+    adam_epsilon=1e-8,
+    warmup_ratio=0.1,
     per_device_train_batch_size=32,
     gradient_accumulation_steps=4,
     per_device_eval_batch_size=32,
     num_train_epochs=10,
-    warmup_ratio=0.1,
     logging_steps=10,
     load_best_model_at_end=True,
     metric_for_best_model="accuracy",
