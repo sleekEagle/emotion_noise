@@ -1,73 +1,59 @@
-from datasets import load_dataset, Audio
-import torchaudio
-import numpy as np
+from dataloaders.creamad import get_dataloader, EMOTION_MAP
 import torch
-from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2ForSequenceClassification
-import pandas as pd
+import evaluate
+import numpy as np
+from transformers import AutoModelForAudioClassification, TrainingArguments, Trainer
 
+accuracy = evaluate.load("accuracy")
 
-# Map emotion labels to IDs
-emotion_labels = ['anger', 'disgust', 'fear', 'happy', 'neutral', 'sad']
-label2id = {label: i for i, label in enumerate(emotion_labels)}
-id2label = {i: label for i, label in enumerate(emotion_labels)}
+def compute_metrics(eval_pred):
+    predictions = np.argmax(eval_pred.predictions, axis=1)
+    return accuracy.compute(predictions=predictions, references=eval_pred.label_ids)
 
-# Load pretrained Wav2Vec2
-model_name = "facebook/wav2vec2-base"  # or "facebook/wav2vec2-large"
+label2id, id2label = dict(), dict()
+for i, label in enumerate(EMOTION_MAP.keys()):
+    label2id[label] = str(i)
+    id2label[str(i)] = label
 
-# Initialize feature extractor
-feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(model_name)
-
-# Initialize model with classification head
-model = Wav2Vec2ForSequenceClassification.from_pretrained(
-    model_name,
-    num_labels=len(emotion_labels),
-    label2id=label2id,
-    id2label=id2label,
-    attention_dropout=0.1,
-    hidden_dropout=0.1,
-    final_dropout=0.1,
+num_labels = len(EMOTION_MAP)
+model = AutoModelForAudioClassification.from_pretrained(
+    "facebook/wav2vec2-base", num_labels=num_labels, label2id=label2id, id2label=id2label
 )
 
-print(f"Model loaded: {model_name}")
-print(f"Number of labels: {len(emotion_labels)}")
+training_args = TrainingArguments(
+    output_dir=r'C:\Users\lahir\models\emo',
+    eval_strategy="epoch",
+    save_strategy="epoch",
+    learning_rate=3e-5,
+    per_device_train_batch_size=32,
+    gradient_accumulation_steps=4,
+    per_device_eval_batch_size=32,
+    num_train_epochs=10,
+    warmup_ratio=0.1,
+    logging_steps=10,
+    load_best_model_at_end=True,
+    metric_for_best_model="accuracy",
+    push_to_hub=False,
+)
 
-data_path = "C:\\Users\\lahir\\code\\CREMA-D\\AudioWAV"
-splits = {'train': 'train.csv', 'test': 'test.csv'}
-df = pd.read_csv("hf://datasets/MahiA/CREMA-D/" + splits["train"])
-
-# Load emotion dataset (CREMA-D as example)
-dataset = load_dataset("jhartwell/crema-d")
-
-# Check dataset structure
-print(dataset)
-print(dataset['train'][0])
 
 
+pass
 
-def prepare_dataset(batch):
-    # Load audio
-    audio = batch["audio"]
-    
-    # Convert to array if needed
-    if isinstance(audio, dict):
-        waveform = audio["array"]
-        sampling_rate = audio["sampling_rate"]
-    else:
-        waveform = audio
-    
-    # Resample to 16kHz if needed
-    if sampling_rate != 16000:
-        resampler = torchaudio.transforms.Resample(sampling_rate, 16000)
-        waveform = resampler(torch.tensor(waveform)).numpy()
-    
-    batch["audio"] = {"array": waveform, "sampling_rate": 16000}
-    
-    # Convert emotion label to ID
-    if "emotion" in batch:
-        batch["labels"] = label2id.get(batch["emotion"].lower(), -1)
-    
-    return batch
+# training_args = TrainingArguments(
+#     output_dir="yelp_review_classifier",
+#     eval_strategy="epoch",
+#     push_to_hub=True,
+# )
 
-# Apply preprocessing
-dataset = dataset.map(prepare_dataset, remove_columns=["emotion"])
+# trainer = Trainer(
+#     model=model,
+#     args=training_args,
+#     train_dataset=dataset["train"],
+#     eval_dataset=dataset["test"],
+#     compute_metrics=compute_metrics,
+# )
+# trainer.train()
+
+
 
