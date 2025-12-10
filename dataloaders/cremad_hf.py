@@ -5,6 +5,15 @@ from transformers import AutoFeatureExtractor
 data_dir = r'C:\Users\lahir\code\CREMA-D\AudioWAV'
 feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
 
+EMOTION_MAP = {
+    "ANG": 0,  # angry
+    "DIS": 1,  # disgust
+    "FEA": 2,  # fearful
+    "HAP": 3,  # happy
+    "NEU": 4,  # neutral
+    "SAD": 5,  # sad
+}
+
 def preprocess_function(examples):
     audio_arrays = [x["array"] for x in examples["audio"]]
     inputs = feature_extractor(
@@ -29,6 +38,10 @@ def get_hf_dataset():
     hf_dataset = hf_dataset.cast_column("sub", ClassLabel(names=sorted(set(sub))))
     hf_dataset = hf_dataset.map(preprocess_function, remove_columns="audio", batched=True)
 
+    sorted_names = [name for name, _ in sorted(EMOTION_MAP.items(), key=lambda x: x[1])]
+    class_label = ClassLabel(names=sorted_names)
+    hf_dataset = hf_dataset.cast_column("label", class_label)
+
     #seperate splits
     ids = sorted(list(set(hf_dataset['sub'])))
     ids.sort()
@@ -41,4 +54,4 @@ def get_hf_dataset():
     return train_ds, eval_ds
 
 
-get_hf_dataset()
+# get_hf_dataset()
