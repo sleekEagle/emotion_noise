@@ -41,7 +41,7 @@ def get_hf_dataset():
     hf_dataset = hf_dataset.cast_column("sub", ClassLabel(names=sorted(set(sub))))
     hf_dataset = hf_dataset.map(preprocess_function, remove_columns="audio", batched=True)
     hf_dataset = hf_dataset.map(lambda x: {"label": int(x["label"])})  # Ensure it's Python int
-    hf_dataset.set_format(type="torch", columns=["input_values", "label"])  # Set torch format
+    hf_dataset.set_format(type="torch", columns=["input_values", "label", "sub"])  # Set torch format
     # hf_dataset = hf_dataset.map(lambda example: {'label': int(example['label'])})
     # labels_list = sorted(set(hf_dataset["label"]))
     # hf_dataset = hf_dataset.cast_column("label", ClassLabel(names=labels_list))
