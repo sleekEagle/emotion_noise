@@ -32,18 +32,16 @@ class SpeakerMatcher:
                 matches.append(audio_file)
         return matches
 
-'''
-how to use:
 
-matcher = SpeakerMatcher(ref_audio_path=r'C:\Users\lahir\code\CREMA-D\AudioWAV\1001_DFA_SAD_XX.wav')
+# how to use:
 
-with files:
-matcher.find_matches(['output_MossFormer2_SS_16K_s1.wav','output_MossFormer2_SS_16K_s2.wav'])
+# matcher = SpeakerMatcher(ref_audio_path=r'C:\Users\lahir\code\CREMA-D\AudioWAV\1001_DFA_SAD_XX.wav')
 
-not using files:
+# with files:
+# matcher.find_matches(['output_MossFormer2_SS_16K_s1.wav','output_MossFormer2_SS_16K_s2.wav'])
+
+# not using files:
 
 
-
-'''   
 
 
