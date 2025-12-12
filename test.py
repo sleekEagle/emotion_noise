@@ -27,7 +27,7 @@ for i, label in enumerate(EMOTION_MAP.keys()):
 
 #dataloader
 # eval_ds, subject_names = get_eval_details(r'C:\Users\lahir\code\CREMA-D\AudioWAV')
-eval_ds, subject_names = get_all_ds(r'C:\Users\lahir\code\CREMA-D\speech_noise_db15')
+eval_ds, subject_names = get_all_ds(r'C:\Users\lahir\code\CREMA-D\clean')
 
 dataloader = torch.utils.data.DataLoader(
     eval_ds, 
@@ -50,6 +50,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 clean data: acc = 0.49
 speech noisy data: acc = 0.448
+cleaned data: 0.2601   we might need to train on cleaned data for better results
 '''
 def eval_model():
     with torch.no_grad():
