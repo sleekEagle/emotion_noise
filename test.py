@@ -1,4 +1,4 @@
-from dataloaders.cremad_hf import get_hf_dataset, EMOTION_MAP, feature_extractor, MAX_LEN, SR
+from dataloaders.cremad_hf import get_eval_details, get_all_ds, EMOTION_MAP, feature_extractor, MAX_LEN, SR
 import torch
 import evaluate
 import numpy as np
@@ -12,6 +12,8 @@ from match_speaker import SpeakerMatcher
 import soundfile as sf
 import os
 
+
+
 accuracy = evaluate.load("accuracy")
 
 def compute_metrics(eval_pred):
@@ -24,7 +26,9 @@ for i, label in enumerate(EMOTION_MAP.keys()):
     id2label[str(i)] = label
 
 #dataloader
-train_ds, eval_ds, subject_names = get_hf_dataset()
+# eval_ds, subject_names = get_eval_details(r'C:\Users\lahir\code\CREMA-D\AudioWAV')
+eval_ds, subject_names = get_all_ds(r'C:\Users\lahir\code\CREMA-D\speech_noise_db15')
+
 dataloader = torch.utils.data.DataLoader(
     eval_ds, 
     batch_size=1,
@@ -38,12 +42,14 @@ dataloader = torch.utils.data.DataLoader(
 
 num_labels = len(EMOTION_MAP)
 model = AutoModelForAudioClassification.from_pretrained(
-    r'C:\\Users\\lahir\\models\\emo\\checkpoint-4600\\', num_labels=num_labels, label2id=label2id, id2label=id2label
+    r'C:\\Users\\lahir\\models\\emo_1s\\checkpoint-4600\\', num_labels=num_labels, label2id=label2id, id2label=id2label
 )
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 '''
-acc = 0.49
+
+clean data: acc = 0.49
+speech noisy data: acc = 0.448
 '''
 def eval_model():
     with torch.no_grad():
@@ -140,7 +146,7 @@ def get_ref_audio():
 
 
 if __name__ == "__main__":
-    eval_model_denoise()
+    eval_model()
 
 
 

@@ -18,3 +18,11 @@ class AudioSeperator:
 #     input_path=r'C:\Users\lahir\data\noise\temp\noisy_speech.wav',
 #     output_path=r'C:\Users\lahir\data\noise\temp\sep\output.wav'
 # )
+
+def sep_dataset():
+    pass
+
+
+if __name__ == "__main__":
+    sep_dataset()
+
