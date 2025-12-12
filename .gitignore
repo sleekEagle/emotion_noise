@@ -1,3 +1,6 @@
 *.pyc
 settings.json
+outputs/*
+checkpoints/*
+pretrained_ecapa/*
 __pycache__/
