@@ -3,4 +3,5 @@ settings.json
 outputs/*
 checkpoints/*
 pretrained_ecapa/*
+tmp/*
 __pycache__/

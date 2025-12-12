@@ -1,4 +1,5 @@
 from clearvoice import ClearVoice
+import os
 
 # myClearVoice = ClearVoice(task='speech_separation', model_names=['MossFormer2_SS_16K'])
 # output_wav = myClearVoice(input_path=r'C:\Users\lahir\code\CREMA-D\AudioWAV\1001_DFA_SAD_XX.wav', online_write=False)
@@ -19,10 +20,17 @@ class AudioSeperator:
 #     output_path=r'C:\Users\lahir\data\noise\temp\sep\output.wav'
 # )
 
-def sep_dataset():
-    pass
+
+def process_file(path):
+    tmp_file = "./tmp/output.wav"
+    ap = AudioSeperator()
+    ap.process_file(
+        input_path=path,
+        output_path=tmp_file
+    )
+    
 
 
 if __name__ == "__main__":
-    sep_dataset()
+    pass
 

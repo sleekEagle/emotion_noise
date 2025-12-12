@@ -130,19 +130,7 @@ def eval_model_denoise():
     print(f'Accuracy: {acc["accuracy"]:.4f}')
 
 
-# get reference audio for each speaker
-def get_ref_audio():
-    data_path = r'C:\Users\lahir\code\CREMA-D\AudioWAV'
-    files = os.listdir(data_path)
-    files.sort()
-    sub = list(set([f.split('_')[0] for f in files]))
-    sub.sort()
-    paths = {}
-    for s in sub:
-        first_match = next((f for f in files if f.startswith(s)), None)
-        p = os.path.join(data_path, first_match)
-        paths[s] = p
-    return paths
+
 
 
 if __name__ == "__main__":
