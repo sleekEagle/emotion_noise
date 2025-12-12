@@ -20,6 +20,20 @@ class SpeakerMatcher:
                 matches.append(audio_file)
         return matches
     
+    def find_best_match(self, candidates):
+        best_sim = 0
+        best_match = None
+        for audio_file in candidates:
+            wav = preprocess_wav(Path(audio_file))
+            embed = self.encoder.embed_utterance(wav)
+            similarity = np.dot(self.ref_embed, embed) / (
+                np.linalg.norm(self.ref_embed) * np.linalg.norm(embed)
+            )
+            if similarity > best_sim:
+                best_match = audio_file
+                best_sim = similarity
+        return best_match, best_sim
+    
     def find_matches_online(self, candidates):
         matches = []
         for audio_file in candidates:
