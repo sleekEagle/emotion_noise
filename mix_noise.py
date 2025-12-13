@@ -6,7 +6,7 @@ import soundfile as sf
 
 snr_db = 15
 
-def mix_noise(audio_path, noise_path, snr_db=15):
+def mix_noise(audio_path, noise_path, snr_db=15, use_white_noise=False):
     speech, sr_speech = librosa.load(audio_path, sr=None)
     noise, sr_noise = librosa.load(noise_path, sr=sr_speech)
 
@@ -23,8 +23,13 @@ def mix_noise(audio_path, noise_path, snr_db=15):
     scaling_factor = np.sqrt(target_noise_power / noise_power)
     scaled_noise = noise_segment * scaling_factor
     noisy_speech = speech + scaled_noise
+
+    if use_white_noise:
+        white_noise = np.random.normal(0, np.sqrt(target_noise_power), len(speech))
+        noisy_speech += white_noise
     
     return noisy_speech
+
 
 def mix_noise_np(speech, sr_speech, noise_path, snr_db=15):
     noise, sr_noise = librosa.load(noise_path, sr=sr_speech)

@@ -92,8 +92,7 @@ def process_dir(data_dir, out_dir):
 
 
 if __name__ == "__main__":
-    process_dir(r'C:\Users\lahir\code\CREMA-D\speech_noise_db15_eval',r'C:\Users\lahir\code\CREMA-D\speech_noise_db15_eval_clean')
-    process_dir(r'C:\Users\lahir\code\CREMA-D\speech_noise_db15_train',r'C:\Users\lahir\code\CREMA-D\speech_noise_db15_train_clean')
+    process_dir(r'C:\Users\lahir\code\CREMA-D\white_speech_noise_db15_eval',r'C:\Users\lahir\code\CREMA-D\white_speech_noise_db15_eval_clean')
 
 
 

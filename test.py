@@ -27,7 +27,7 @@ for i, label in enumerate(EMOTION_MAP.keys()):
 
 #dataloader
 # eval_ds, subject_names = get_eval_details(r'C:\Users\lahir\code\CREMA-D\AudioWAV')
-eval_ds, subject_names = get_all_ds(r'C:\Users\lahir\code\CREMA-D\speech_noise_db15_eval')
+eval_ds, subject_names = get_all_ds(r'C:\Users\lahir\code\CREMA-D\white_speech_noise_db15_eval_clean')
 
 dataloader = torch.utils.data.DataLoader(
     eval_ds, 
@@ -42,7 +42,7 @@ dataloader = torch.utils.data.DataLoader(
 
 num_labels = len(EMOTION_MAP)
 model = AutoModelForAudioClassification.from_pretrained(
-    r'C:\Users\lahir\models\emo_cleaned\checkpoint-1012', num_labels=num_labels, label2id=label2id, id2label=id2label
+    r'C:\Users\lahir\models\speech_noise_emo_cleaned\checkpoint-1012', num_labels=num_labels, label2id=label2id, id2label=id2label
 )
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
