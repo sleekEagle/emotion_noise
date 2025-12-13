@@ -27,7 +27,7 @@ for i, label in enumerate(EMOTION_MAP.keys()):
 
 #dataloader
 # eval_ds, subject_names = get_eval_details(r'C:\Users\lahir\code\CREMA-D\AudioWAV')
-eval_ds, subject_names = get_all_ds(r'C:\Users\lahir\code\CREMA-D\white_speech_noise_db15_eval_clean')
+eval_ds, subject_names = get_all_ds(r'C:\Users\lahir\code\CREMA-D\speech_noise_db15_eval_clean')
 
 dataloader = torch.utils.data.DataLoader(
     eval_ds, 
@@ -47,16 +47,17 @@ model = AutoModelForAudioClassification.from_pretrained(
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 '''
-
 clean data: acc = 0.49
-speech noisy data: acc = 0.448
-cleaned data: 0.2601   we might need to train on cleaned data for better results
+speech noisy data: acc = 0.416
+speech + white noise data: acc = 0.288
+speech noise cleaned data: 0.261    we might need to train on cleaned data for better results
+white noise + speech noise cleaned data:  0.27
 
 created train dataset with speech noise added at 15db. eval dataset was also created with a seperate speech noise added. 
 noise was removed using speaker separation and best speaker match and created cleaned eval and train datasets.
 
-acc on the cleaned eval dataset : 0.51
-acc on the noisy eval dataset : 0.36
+acc on the cleaned (white + speech noise) eval dataset : 0.4849
+acc on the cleaned (speech noise) eval dataset : 0.5145
 '''
 def eval_model():
     with torch.no_grad():
