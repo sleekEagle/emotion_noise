@@ -1,4 +1,5 @@
 from dataloaders.cremad_hf import get_hf_dataset, EMOTION_MAP, feature_extractor
+from dataloaders.cremad_hf import get_all_ds
 import torch
 import evaluate
 import numpy as np
@@ -21,7 +22,10 @@ for i, label in enumerate(EMOTION_MAP.keys()):
     id2label[str(i)] = label
 
 #dataloader
-train_ds, eval_ds = get_hf_dataset()
+# train_ds, eval_ds = get_hf_dataset()
+eval_ds, subject_names_eval = get_all_ds(r'C:\Users\lahir\code\CREMA-D\speech_noise_db15_eval_clean')
+train_ds, subject_names_train = get_all_ds(r'C:\Users\lahir\code\CREMA-D\speech_noise_db15_train_clean')
+
 
 num_labels = len(EMOTION_MAP)
 model = AutoModelForAudioClassification.from_pretrained(
@@ -34,7 +38,7 @@ model = AutoModelForAudioClassification.from_pretrained(
 #     print(name, param.requires_grad)
 
 training_args = TrainingArguments(
-    output_dir=r'C:\Users\lahir\models\emo',
+    output_dir=r'C:\Users\lahir\models\emo_cleaned',
     eval_strategy="epoch",
     save_strategy="epoch",
     learning_rate=3e-05,
@@ -46,7 +50,7 @@ training_args = TrainingArguments(
     per_device_train_batch_size=32,
     gradient_accumulation_steps=4,
     per_device_eval_batch_size=32,
-    num_train_epochs=100,
+    num_train_epochs=30,
     logging_steps=10,
     load_best_model_at_end=True,
     metric_for_best_model="accuracy",

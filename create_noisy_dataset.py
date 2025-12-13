@@ -4,7 +4,7 @@ import soundfile as sf
 from dataloaders.cremad_hf import get_split_paths
 
 data_path = r'C:\Users\lahir\code\CREMA-D\AudioWAV'
-noise_path = r'C:\Users\lahir\data\noise\speech_noise.mp3'
+noise_path = r'C:\Users\lahir\data\noise\speech_noise_eval.mp3'
 output_path = r'C:\Users\lahir\code\CREMA-D\speech_noise_db15_eval'
 os.makedirs(output_path, exist_ok=True)
 
